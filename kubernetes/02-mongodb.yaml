@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb
+  namespace: qbshop
+  labels:
+    app: mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+      - name: mongodb
+        image: mongo:latest
+        ports:
+        - containerPort: 27017
+          name: mongodb
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+        volumeMounts:
+        - name: mongodb-data
+          mountPath: /data/db
+      volumes:
+      - name: mongodb-data
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-service
+  namespace: qbshop
+  labels:
+    app: mongodb
+spec:
+  type: ClusterIP
+  ports:
+  - port: 27017
+    targetPort: 27017
+    name: mongodb
+  selector:
+    app: mongodb

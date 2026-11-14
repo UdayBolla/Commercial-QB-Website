@@ -56,8 +56,5 @@ if (mongoose.models.Cart) {
   delete mongoose.models.Cart;
 }
 
-// Delete existing model collection
-mongoose.connection.collections['carts']?.drop();
-
 const Cart = mongoose.model<ICart>('Cart', cartSchema);
 export default Cart;

@@ -22,7 +22,7 @@ const ProfilePage = async () => {
   }
 
   // Verify the token
-  const decoded = verifyToken(token);
+  const decoded = await verifyToken(token);
   if (!decoded) {
     redirect("/login?redirect=/profile");
   }

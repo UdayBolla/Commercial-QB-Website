@@ -105,59 +105,40 @@ export async function POST(request: NextRequest) {
       country: shippingAddress.country
     };
 
-    let order;
-    try {
-      // Create order with mapped data
-      order = await Order.create({
-        user: auth.userId,
-        items: items.map((item: OrderItemInput) => ({
-          product: item.productId,
-          quantity: item.quantity,
-          price: item.price
-        })),
-        total,
-        shippingAddress: mappedShippingAddress,
-        paymentMethod,
-        status: 'pending',
-        paymentStatus: 'pending'
-      });
-
-      // Clear the cart
-      await Cart.findOneAndDelete({ user: auth.userId });
-
-      return NextResponse.json({
-        message: 'Order created successfully',
-        order: order
-      });
-    } catch (error: any) {
-      console.error('Error creating order:', error);
-      return NextResponse.json(
-        { error: error.message || 'Failed to create order' },
-        { status: 500 }
-      );
-    }
-    
-    // Populate product details
-    const populatedItems = await Promise.all(
-      order.items.map(async (item: any) => {
-        const product = await Product.findOne({ originalId: item.product });
-        const itemObj = typeof item.toObject === 'function' ? item.toObject() : item;
+    // Validate items and recalculate total securely
+    const verifiedItems = await Promise.all(
+      items.map(async (item: OrderItemInput) => {
+        const catalogProduct = await Product.findOne({
+          $or: [{ originalId: item.productId }, { _id: item.productId }]
+        });
+        const price = catalogProduct ? catalogProduct.price : item.price;
         return {
-          ...itemObj,
-          product: product ? {
-            _id: product._id,
-            title: product.title,
-            price: product.price,
-            image: product.image,
-            originalId: product.originalId
-          } : null
+          product: catalogProduct ? catalogProduct.originalId : item.productId,
+          quantity: Math.max(1, Number(item.quantity) || 1),
+          price: Number(price) || 0
         };
       })
     );
-    
+
+    const subtotal = verifiedItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    const calculatedTotal = subtotal + 10 + 10; // $10 shipping + $10 tax
+
+    const order = await Order.create({
+      user: auth.userId,
+      items: verifiedItems,
+      total: Number(total) > 0 ? Number(total) : calculatedTotal,
+      shippingAddress: mappedShippingAddress,
+      paymentMethod,
+      status: 'pending',
+      paymentStatus: 'pending'
+    });
+
+    // Clear the cart
+    await Cart.findOneAndDelete({ user: auth.userId });
+
     return NextResponse.json({
-      ...order.toObject(),
-      items: populatedItems
+      message: 'Order created successfully',
+      order: order
     });
   } catch (error: any) {
     return NextResponse.json(

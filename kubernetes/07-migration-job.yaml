@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: qbshop-migration-job
+  namespace: qbshop
+  labels:
+    app: qbshop-migration
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: qbshop-migration
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: migration
+        image: satyamsri/qbshop-migration:latest
+        imagePullPolicy: IfNotPresent
+        envFrom:
+        - configMapRef:
+            name: qbshop-config

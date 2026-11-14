@@ -10,9 +10,11 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const query: any = {};
     
-    // Search by title or description
-    if (searchParams.has('search')) {
-      const searchRegex = new RegExp(searchParams.get('search') as string, 'i');
+    // Search by title or description (safely escaped)
+    const searchTerm = searchParams.get('search') || searchParams.get('q');
+    if (searchTerm) {
+      const escapedTerm = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const searchRegex = new RegExp(escapedTerm, 'i');
       query.$or = [
         { title: searchRegex },
         { description: searchRegex }
