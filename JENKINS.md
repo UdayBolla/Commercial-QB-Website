@@ -123,35 +123,36 @@ Install these plugins via "Manage Jenkins" > "Manage Plugins" > "Available":
 ### 1. Create Pipeline
 
 1. Click "New Item"
-2. Enter name: "easyshop-pipeline"
-3. Select "Pipeline"
+2. Enter name: "qbshop-pipeline"
+3. Select "Pipeline" and click "OK"
 4. Configure:
-   - GitHub project URL
-   - Build Triggers: GitHub hook trigger for GITScm polling
-   - Pipeline script from SCM
-   - Git repository URL
-   - Branch: */main
-   - Script Path: Jenkinsfile
+   - **GitHub project URL**: `https://github.com/Dev664/Commercial-QB-Website`
+   - **Build Triggers**: Select "GitHub hook trigger for GITScm polling"
+   - **Pipeline**:
+     - Definition: *Pipeline script from SCM*
+     - SCM: *Git*
+     - Repository URL: `https://github.com/Dev664/Commercial-QB-Website.git`
+     - Credentials: Select `github-credentials`
+     - Branch Specifier: `*/main`
+     - Script Path: `Jenkinsfile`
+5. Click "Save".
 
-### 2. Shared Library Integration
+> [!NOTE]
+> **100% Self-Contained Pipeline**: The `Jenkinsfile` is fully self-contained using native Jenkins Pipeline steps. It requires **zero external shared libraries** to be configured in Jenkins Global Pipeline Libraries.
 
-Our pipeline uses a shared library from: [EasyShop Jenkins Shared Library](https://github.com/iemafzalhassan/EasyShop-jenkins-shared-lib)
+### 2. Pipeline Execution Stages
 
-1. Go to "Manage Jenkins" > "Configure System"
-2. Under "Global Pipeline Libraries":
-   - Name: easyshop-shared-lib
-   - Default version: main
-   - Modern SCM: GitHub
-   - Repository URL: https://github.com/iemafzalhassan/EasyShop-jenkins-shared-lib.git
-
-### 3. Pipeline Stages
-
-Our pipeline includes these stages:
-1. Checkout: Cleans workspace and checks out code
-2. Build Docker Images: Builds application containers
-3. Push to Docker Hub: Pushes images to registry
-4. Deploy to Production: Deploys the application
-5. Email Notification: Sends build status
+The pipeline automatically runs the following stages:
+1. **Cleanup Workspace**: Cleans previous workspace artifacts (`cleanWs()`).
+2. **Checkout Code**: Checks out code from the `main` branch.
+3. **Cleanup Docker Engine**: Prunes dangling containers and images to prevent disk exhaustion.
+4. **Run Unit Tests**: Runs `npm test` validation.
+5. **Build Docker Images (Parallel)**:
+   - Main Next.js Web App (`doc201/qbshop-app:${BUILD_NUMBER}`)
+   - Database Migration Job (`doc201/qbshop-migration:${BUILD_NUMBER}`)
+6. **Security Scan with Trivy**: Runs security vulnerability scan on newly built images.
+7. **Push Docker Images**: Authenticates securely using `docker-hub-credentials` and pushes versioned and `latest` tags to DockerHub.
+8. **Update Kubernetes Manifests**: Updates image tags in `kubernetes/*.yaml`, commits, and pushes back to GitHub using `[ci skip]`.
 
 ### Logs Location
 
@@ -160,10 +161,9 @@ Important log locations:
 - Docker logs: `docker logs container-name`
 - Build logs: Available in Jenkins job console output
 
-
 ## References
 
 - [Jenkins Documentation](https://www.jenkins.io/doc/)
 - [Docker Documentation](https://docs.docker.com/)
 - [GitHub Webhooks Guide](https://docs.github.com/en/webhooks)
-- [EasyShop Shared Library](https://github.com/iemafzalhassan/EasyShop-jenkins-shared-lib)
+- [Trivy Vulnerability Scanner](https://aquasecurity.github.io/trivy/)

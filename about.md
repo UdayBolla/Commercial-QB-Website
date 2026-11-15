@@ -181,13 +181,13 @@ docker run -d \
 
 3. Build the main application:
 ```bash
-docker build -t satyamsri/qualibytes-shop-app:1 .
+docker build -t doc201/qualibytes-shop-app:latest .
 ```
 
 4. Build and run data migration:
 ```bash
 # Build migration image
-docker build -t satyamsri/qualibytes-shop-migration:1 -f scripts/Dockerfile.migration .
+docker build -t doc201/qualibytes-shop-migration:latest -f scripts/Dockerfile.migration .
 
 # Run migration
 docker run --rm \
@@ -203,7 +203,7 @@ docker run -d \
   --network easyshop-network \
   -p 3000:3000 \
   --env-file .env.local \
-  satyamsri/qualibytes-shop-app:1
+  doc201/qualibytes-shop-app:latest
 ```
 
 ### Accessing the Application

@@ -15,7 +15,7 @@ spec:
       restartPolicy: OnFailure
       containers:
       - name: migration
-        image: satyamsri/qbshop-migration:latest
+        image: doc201/qbshop-migration:latest
         imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:

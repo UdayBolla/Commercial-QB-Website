@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: qbshop-app
-        image: satyamsri/qbshop-app:latest
+        image: doc201/qbshop-app:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3000

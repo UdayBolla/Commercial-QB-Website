@@ -151,7 +151,7 @@ Get the full application and database running locally in under 3 minutes.
 ### 1. Open or Clone the Repository
 * **If cloning freshly:**
   ```bash
-  git clone https://github.com/Satyams-git/Qualibytes-Ecommerce.git "Commercial QB Website"
+  git clone https://github.com/Dev664/Commercial-QB-Website.git "Commercial QB Website"
   cd "Commercial QB Website"
   ```
 * **Or navigate to the project directory:**
@@ -326,7 +326,7 @@ kubectl get pods -n qbshop -l app=mongodb
 * **Action**: Build and push the main application and migration images to your container registry (DockerHub or AWS ECR):
 ```bash
 # Set your registry username
-export REGISTRY_USER="satyamsri"  # Change to your DockerHub username
+export REGISTRY_USER="doc201"  # DockerHub username
 
 # Login to DockerHub
 docker login
@@ -428,7 +428,7 @@ Navigate to: **Manage Jenkins → Credentials → System → Global credentials 
 3. Under **Pipeline**:
    - **Definition**: *Pipeline script from SCM*
    - **SCM**: *Git*
-   - **Repository URL**: `https://github.com/<your-username>/Qualibytes-Ecommerce.git`
+   - **Repository URL**: `https://github.com/Dev664/Commercial-QB-Website.git`
    - **Branch**: `main` (or `dev`)
    - **Script Path**: `Jenkinsfile`
 4. Click **Save** and trigger **Build Now**.
