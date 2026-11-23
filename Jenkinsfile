@@ -123,8 +123,8 @@ pipeline {
                     passwordVariable: 'GIT_TOKEN'
                 )]) {
                     sh """
-                        git config user.name "Jenkins CI"
-                        git config user.email "devqualibytes@gmail.com"
+                        git config user.name "udaybolla"
+                        git config user.email "udaykiranreddybolla@gmail.com"
                         
                         # Update deployment manifests with the newly built build number tag
                         sed -i "s|image: doc201/qbshop-app:.*|image: udaybolla/qbshop-app:${DOCKER_IMAGE_TAG}|g" kubernetes/*.yaml || true
