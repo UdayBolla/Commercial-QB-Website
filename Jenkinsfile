@@ -3,12 +3,12 @@ pipeline {
     
     environment {
         // DockerHub repository namespaces
-        DOCKER_IMAGE_NAME = 'doc201/qbshop-app'
-        DOCKER_MIGRATION_IMAGE_NAME = 'doc201/qbshop-migration'
+        DOCKER_IMAGE_NAME = 'udaybolla/qbshop-app'
+        DOCKER_MIGRATION_IMAGE_NAME = 'udaybolla/qbshop-migration'
         DOCKER_IMAGE_TAG = "${BUILD_NUMBER}"
         
         // Git configuration
-        GIT_REPO_URL = 'https://github.com/Dev664/Commercial-QB-Website.git'
+        GIT_REPO_URL = 'https://github.com/UdayBolla/Commercial-QB-Website.git'
         GIT_BRANCH = 'main'
         
         // Jenkins Credentials IDs
@@ -127,8 +127,8 @@ pipeline {
                         git config user.email "devqualibytes@gmail.com"
                         
                         # Update deployment manifests with the newly built build number tag
-                        sed -i "s|image: doc201/qbshop-app:.*|image: doc201/qbshop-app:${DOCKER_IMAGE_TAG}|g" kubernetes/*.yaml || true
-                        sed -i "s|image: doc201/qbshop-migration:.*|image: doc201/qbshop-migration:${DOCKER_IMAGE_TAG}|g" kubernetes/*.yaml || true
+                        sed -i "s|image: doc201/qbshop-app:.*|image: udaybolla/qbshop-app:${DOCKER_IMAGE_TAG}|g" kubernetes/*.yaml || true
+                        sed -i "s|image: doc201/qbshop-migration:.*|image: udaybolla/qbshop-migration:${DOCKER_IMAGE_TAG}|g" kubernetes/*.yaml || true
                         
                         if git diff --quiet kubernetes/; then
                             echo "No Kubernetes manifest changes to commit."
@@ -136,7 +136,7 @@ pipeline {
                             echo "Committing updated manifests for image tag ${DOCKER_IMAGE_TAG}..."
                             git add kubernetes/*.yaml
                             git commit -m "ci(k8s): update image tags to ${DOCKER_IMAGE_TAG} [ci skip]"
-                            git remote set-url origin https://\${GIT_USER}:\${GIT_TOKEN}@github.com/Dev664/Commercial-QB-Website.git
+                            git remote set-url origin https://\${GIT_USER}:\${GIT_TOKEN}@github.com/UdayBolla/Commercial-QB-Website.git
                             git push origin HEAD:${GIT_BRANCH}
                         fi
                     """
